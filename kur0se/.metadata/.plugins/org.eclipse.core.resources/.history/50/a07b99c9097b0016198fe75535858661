@@ -1,0 +1,14 @@
+package kur0sePackage1;
+
+public class helperclass {
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		for (int j = 0; j < 24; ++j) {
+			for (int k = 0; k < 60; k += 30) {
+				System.out.println("timeList.add(new TimeBlock(DayOfWeek.SATURDAY," + j + "," + k + "));");
+			}
+		}
+	}
+
+}

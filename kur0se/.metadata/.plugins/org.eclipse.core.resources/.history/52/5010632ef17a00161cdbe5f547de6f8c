@@ -1,0 +1,74 @@
+package DataStructures;
+
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+
+import javafx.scene.input.ScrollEvent.HorizontalTextScrollUnits;
+
+import java.time.*;
+
+public class TimeBlock {
+
+	private LocalDate currentDate;
+	private DayOfWeek day;
+	private int hour;
+	private int minute;
+	private String timeInString;
+
+	private void init(boolean currentTime) {
+		LocalDate today = LocalDate.now();
+		day = today.getDayOfWeek();
+		hour = LocalDateTime.now().getHour();
+		minute = LocalDateTime.now().getMinute();
+		timeInString = hour + ":" + minute;
+
+	}
+
+	public TimeBlock(boolean isCurrentTime) {
+	}
+
+	public TimeBlock() {
+	}
+
+	public LocalDate getCurrentDate() {
+		return currentDate;
+	}
+
+	public void setCurrentDate(LocalDate currentDate) {
+		this.currentDate = currentDate;
+	}
+
+	public DayOfWeek getDay() {
+		return day;
+	}
+
+	public void setDay(DayOfWeek day) {
+		this.day = day;
+	}
+
+	public int getHour() {
+		return hour;
+	}
+
+	public void setHour(int hour) {
+		this.hour = hour;
+	}
+
+	public int getMinute() {
+		return minute;
+	}
+
+	public void setMinute(int minute) {
+		this.minute = minute;
+	}
+
+	public String getTimeInString() {
+		return timeInString;
+	}
+
+	public void setTimeInString(String timeInString) {
+		this.timeInString = timeInString;
+	}
+
+}

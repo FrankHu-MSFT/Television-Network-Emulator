@@ -1,0 +1,14 @@
+package DataStructures;
+
+import javafx.beans.property.SimpleStringProperty;
+
+public class FileBlock {
+
+	private SimpleStringProperty  fileName;
+	private SimpleStringProperty  filePath;
+
+	public FileBlock(String fileName, String filePath) {
+		this.fileName = fileName;
+		this.filePath = filePath;
+	}
+}

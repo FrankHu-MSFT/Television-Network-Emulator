@@ -1,0 +1,12 @@
+package DataStructures;
+
+public class FileBlock {
+
+	private String fileName;
+	private String filePath;
+
+	public FileBlock(String fileName, String filePath) {
+		this.fileName = filename;
+		this.filePath = filepath;
+	}
+}
