@@ -112,7 +112,8 @@ public class TimeModifyController {
 		LocalDate date = LocalDate.now();
 		DayOfWeek day = date.getDayOfWeek();
 
-		//currentPlayingTimeblock = timeBlockMap.get(day + " | " + now.getHour() + ":" + minuteRoundedDown);
+		// currentPlayingTimeblock = timeBlockMap.get(day + " | " +
+		// now.getHour() + ":" + minuteRoundedDown);
 		currentPlayingTimeblock = timeList.get(0);
 		this.stage.setTitle(day + " | " + now.getHour() + ":" + minuteRoundedDown);
 
@@ -187,15 +188,16 @@ public class TimeModifyController {
 		// now.getHour() + ":" + minuteRoundedDown);
 		// K so, I fucked up, I should have just used a fucking hashmap. RIP,
 		// whatever fuck it
-	
+
 		for (int i = 0; i < timeList.size(); ++i) {
-			if (TimeBlocks.getItems().get(i).getHour() == now.getHour() && TimeBlocks.getItems().get(i).getMinute() == minuteRoundedDown
+			if (TimeBlocks.getItems().get(i).getHour() == now.getHour()
+					&& TimeBlocks.getItems().get(i).getMinute() == minuteRoundedDown
 					&& TimeBlocks.getItems().get(i).getDay() == day) {
 				currentPlayingTimeblock = TimeBlocks.getItems().get(i);
 				break;
 			}
 		}
-		
+
 		updatePlaylist();
 
 		timer.schedule(new TimerTask() {
@@ -206,6 +208,7 @@ public class TimeModifyController {
 						// TODO: every thirty minutes
 						nextTimeBlock();
 						updatePlaylist();
+
 						System.out.println("ran in here?");
 					}
 				});
@@ -225,7 +228,7 @@ public class TimeModifyController {
 	// This doesn't actually update the current playing timeblock... bad design
 	// ik, fuck u
 	private void updatePlaylist() {
-		trackNum= 0;
+		trackNum = 0;
 		Media media = new Media(currentPlayingTimeblock.getFileList().get(trackNum++).getFilePath());
 		MediaPlayer mediaPlayer = new MediaPlayer(media);
 		mediaPlayer.setAutoPlay(true);
@@ -269,9 +272,10 @@ public class TimeModifyController {
 			nextMinute -= 30;
 		}
 		String timeInString = nextHour + ":" + nextMinute;
-		//currentPlayingTimeblock ;= timeBlockMap.get(nextDay.toString() + " | " + timeInString)
-	
-			// TODO:
+		// currentPlayingTimeblock ;= timeBlockMap.get(nextDay.toString() + " |
+		// " + timeInString)
+		this.stage.setTitle(nextDay + " | " + nextHour + ":" + nextMinute);
+		// TODO:
 	}
 
 	private void initFileTable() {
@@ -405,7 +409,8 @@ public class TimeModifyController {
 		// this.updateTimeBlockHashmap();
 
 		for (int i = 0; i < timeList.size(); ++i) {
-			if (timeList.get(i).getHour() == currentTimeBlockView.getHour() && timeList.get(i).getMinute() == currentTimeBlockView.getMinute()
+			if (timeList.get(i).getHour() == currentTimeBlockView.getHour()
+					&& timeList.get(i).getMinute() == currentTimeBlockView.getMinute()
 					&& timeList.get(i).getDay() == currentTimeBlockView.getDay()) {
 				timeList.set(i, currentTimeBlockView);
 			}
