@@ -33,7 +33,7 @@ public class TimeModifyApplication extends Application {
 	@Override
 	public void start(Stage primaryStage) {
 		this.primaryStage = primaryStage;
-		this.primaryStage.setTitle("idk what this should be called");
+		this.primaryStage.setTitle("Television Network Emualtor");
 
 		initRootLayout();
 
