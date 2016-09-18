@@ -84,6 +84,7 @@ public class TimeModifyController {
 	private DirectMediaPlayerComponent mp;
 	private int trackNum = 0;
 	private MediaView mediaView;
+	private MediaPlayer mediaPlayer;
 	private TimeBlock currentTimeBlockView;
 	private ObservableList<FileBlock> fileList = FXCollections.observableArrayList();
 	private ObservableList<TimeBlock> timeList = FXCollections.observableArrayList();
@@ -101,6 +102,7 @@ public class TimeModifyController {
 		initFileList();
 		initTimeBlocks();
 		initCurrentPlayingTimeBlock();
+
 	}
 
 	private void initCurrentPlayingTimeBlock() {
@@ -205,11 +207,13 @@ public class TimeModifyController {
 			public void run() {
 				Platform.runLater(new Runnable() {
 					public void run() {
+						trackNum = 0;
 						// TODO: every thirty minutes
 						nextTimeBlock();
+						System.out.println(currentPlayingTimeblock.getTimeBlockName());
+						mediaPlayer.stop();
 						updatePlaylist();
-
-						System.out.println("ran in here?");
+						System.out.println(currentPlayingTimeblock.getFilePath());
 					}
 				});
 			}
@@ -225,21 +229,30 @@ public class TimeModifyController {
 		// hour) = amount to reach next half hour, therefore that is the delay
 	}
 
+	private void setCurrentPlayTime(int hour, int minute, DayOfWeek day) {
+		for (int i = 0; i < timeList.size(); ++i) {
+			if (TimeBlocks.getItems().get(i).getHour() == hour
+					&& TimeBlocks.getItems().get(i).getMinute() == minute
+					&& TimeBlocks.getItems().get(i).getDay() == day) {
+				currentPlayingTimeblock = TimeBlocks.getItems().get(i);
+				break;
+			}
+		}
+	}
+
 	// This doesn't actually update the current playing timeblock... bad design
 	// ik, fuck u
 	private void updatePlaylist() {
-		trackNum = 0;
 		Media media = new Media(currentPlayingTimeblock.getFileList().get(trackNum++).getFilePath());
-		MediaPlayer mediaPlayer = new MediaPlayer(media);
-		mediaPlayer.setAutoPlay(true);
+		mediaPlayer = new MediaPlayer(media);
 		mediaView.setMediaPlayer(mediaPlayer);
+		mediaPlayer.setAutoPlay(true);
 		mediaPlayer.setOnEndOfMedia(new Runnable() {
 			@Override
 			public void run() {
 				Media media = new Media(currentPlayingTimeblock.getFileList().get(trackNum++).getFilePath());
-				MediaPlayer mediaPlayer = new MediaPlayer(media);
-				mediaPlayer.setAutoPlay(true);
-				mediaView.setMediaPlayer(mediaPlayer);
+				mediaPlayer = new MediaPlayer(media);
+
 			}
 		});
 	}
@@ -263,19 +276,21 @@ public class TimeModifyController {
 		int nextHour = currentPlayingTimeblock.getHour();
 		int nextMinute = currentPlayingTimeblock.getMinute();
 		DayOfWeek nextDay = currentPlayingTimeblock.getDay();
-		if (nextHour == 23 && nextMinute == 30) {
-
+		if (nextHour == 23 && nextMinute == 30) { // handles day
 			nextDay = currentPlayingTimeblock.getDay().plus(1);
 		}
-		if (nextMinute == 30) {
+		if (nextMinute == 30) { // handles 30 minute
 			nextHour++;
 			nextMinute -= 30;
+		}else{ // handles 0 minute
+			nextMinute+=30;
 		}
 		String timeInString = nextHour + ":" + nextMinute;
 		// currentPlayingTimeblock ;= timeBlockMap.get(nextDay.toString() + " |
 		// " + timeInString)
 		this.stage.setTitle(nextDay + " | " + nextHour + ":" + nextMinute);
 		// TODO:
+		setCurrentPlayTime(nextHour, nextMinute, nextDay);
 	}
 
 	private void initFileTable() {
@@ -403,11 +418,11 @@ public class TimeModifyController {
 			FileBlock block = new FileBlock(fileEntry.getName(), fileEntry.toURI().toString());
 			System.out.println(block.getFileName());
 			fileList.add(block);
+			this.currentTimeBlockView.setFilePath(fileEntry.getAbsolutePath());
 		}
 
 		this.currentTimeBlockView.setFileList(FXCollections.observableArrayList(fileList));
 		// this.updateTimeBlockHashmap();
-
 		for (int i = 0; i < timeList.size(); ++i) {
 			if (timeList.get(i).getHour() == currentTimeBlockView.getHour()
 					&& timeList.get(i).getMinute() == currentTimeBlockView.getMinute()
@@ -425,6 +440,7 @@ public class TimeModifyController {
 
 	public void initMediaPlayer() {
 		mediaView = new MediaView();
+		mediaView.setMediaPlayer(mediaPlayer);
 		videoPane.setCenter(mediaView);
 		videoPane.setBottom(addToolBar());
 		videoPane.setStyle("-fx-background-color: Black");
@@ -818,7 +834,6 @@ public class TimeModifyController {
 		timeList.add(new TimeBlock(DayOfWeek.SUNDAY, 8, 30));
 		timeList.add(new TimeBlock(DayOfWeek.SUNDAY, 9, 0));
 		timeList.add(new TimeBlock(DayOfWeek.SUNDAY, 9, 30));
-		timeList.add(new TimeBlock(DayOfWeek.SUNDAY, 10, 0));
 		timeList.add(new TimeBlock(DayOfWeek.SUNDAY, 10, 30));
 		timeList.add(new TimeBlock(DayOfWeek.SUNDAY, 11, 0));
 		timeList.add(new TimeBlock(DayOfWeek.SUNDAY, 11, 30));

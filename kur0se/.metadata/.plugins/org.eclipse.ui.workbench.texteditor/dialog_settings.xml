@@ -2,22 +2,23 @@
 <section name="Workbench">
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
 		<item value="false" key="isRegEx"/>
-		<item value="initTimer" key="selection"/>
+		<item value="Timer" key="selection"/>
 		<item value="false" key="casesensitive"/>
 		<item value="false" key="incremental"/>
 		<item value="true" key="wrap"/>
 		<item value="false" key="wholeword"/>
 		<list key="findhistory">
-			<item value="inittimer"/>
-			<item value="2"/>
-			<item value="==2"/>
+			<item value="timer"/>
+			<item value="browse"/>
 			<item value="== 2"/>
-			<item value="borderPane"/>
-			<item value="videopane"/>
-			<item value="anchorpane"/>
-			<item value="chooser"/>
+			<item value="tiemr"/>
+			<item value="double click"/>
+			<item value="nexttimeblock"/>
+			<item value="ran in here"/>
+			<item value="raninhere"/>
 		</list>
 		<list key="replacehistory">
+			<item value="currentPlayingTimeblock"/>
 			<item value="videoPane"/>
 			<item value=" fx:id"/>
 			<item value=" fx:"/>
