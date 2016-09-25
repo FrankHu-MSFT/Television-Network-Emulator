@@ -1,18 +1,17 @@
 package kur0sePackage1;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Locale;
+import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -61,7 +60,7 @@ public class TimeModifyController {
 	@FXML
 	private TextField FolderPath;
 	@FXML
-	private CheckBox RandomBox;
+	private Button RandomBox;
 	@FXML
 	private TableView<FileBlock> FileTable;
 	@FXML
@@ -191,16 +190,17 @@ public class TimeModifyController {
 		// K so, I fucked up, I should have just used a fucking hashmap. RIP,
 		// whatever fuck it
 
-		for (int i = 0; i < timeList.size(); ++i) {
-			if (TimeBlocks.getItems().get(i).getHour() == now.getHour()
-					&& TimeBlocks.getItems().get(i).getMinute() == minuteRoundedDown
-					&& TimeBlocks.getItems().get(i).getDay() == day) {
-				currentPlayingTimeblock = TimeBlocks.getItems().get(i);
-				break;
-			}
-		}
+		/*
+		 * for (int i = 0; i < timeList.size(); ++i) { if
+		 * (TimeBlocks.getItems().get(i).getHour() == now.getHour() &&
+		 * TimeBlocks.getItems().get(i).getMinute() == minuteRoundedDown &&
+		 * TimeBlocks.getItems().get(i).getDay() == day) {
+		 * currentPlayingTimeblock = TimeBlocks.getItems().get(i); break; } }
+		 */
 
-		updatePlaylist();
+		// above code should be done in setcurrentplaytime
+		setCurrentPlayTime(now.getHour(), minuteRoundedDown, day);
+		updateMediaPlayer();
 
 		timer.schedule(new TimerTask() {
 			@Override
@@ -211,8 +211,7 @@ public class TimeModifyController {
 						// TODO: every thirty minutes
 						nextTimeBlock();
 						System.out.println(currentPlayingTimeblock.getTimeBlockName());
-						mediaPlayer.stop();
-						updatePlaylist();
+						updateMediaPlayer();
 						System.out.println(currentPlayingTimeblock.getFilePath());
 					}
 				});
@@ -231,8 +230,7 @@ public class TimeModifyController {
 
 	private void setCurrentPlayTime(int hour, int minute, DayOfWeek day) {
 		for (int i = 0; i < timeList.size(); ++i) {
-			if (TimeBlocks.getItems().get(i).getHour() == hour
-					&& TimeBlocks.getItems().get(i).getMinute() == minute
+			if (TimeBlocks.getItems().get(i).getHour() == hour && TimeBlocks.getItems().get(i).getMinute() == minute
 					&& TimeBlocks.getItems().get(i).getDay() == day) {
 				currentPlayingTimeblock = TimeBlocks.getItems().get(i);
 				break;
@@ -240,9 +238,20 @@ public class TimeModifyController {
 		}
 	}
 
+	private void updateTimeBlockView() {
+		this.currentTimeBlockView.setFileList(FXCollections.observableArrayList(fileList));
+		for (int i = 0; i < timeList.size(); ++i) {
+			if (timeList.get(i).getHour() == currentTimeBlockView.getHour()
+					&& timeList.get(i).getMinute() == currentTimeBlockView.getMinute()
+					&& timeList.get(i).getDay() == currentTimeBlockView.getDay()) {
+				timeList.set(i, currentTimeBlockView);
+			}
+		}
+	}
+
 	// This doesn't actually update the current playing timeblock... bad design
 	// ik, fuck u
-	private void updatePlaylist() {
+	private void updateMediaPlayer() {
 		Media media = new Media(currentPlayingTimeblock.getFileList().get(trackNum++).getFilePath());
 		mediaPlayer = new MediaPlayer(media);
 		mediaView.setMediaPlayer(mediaPlayer);
@@ -258,16 +267,20 @@ public class TimeModifyController {
 	}
 
 	@FXML
-	private void saveTimeBlocks(ActionEvent event) {
-		FileOutputStream fout;
+	private void saveTimeBlocks(ActionEvent event) throws IOException {
 		try {
-			fout = new FileOutputStream("./");
-			ObjectOutputStream oos;
-			oos = new ObjectOutputStream(fout);
-			oos.writeObject(timeList);
+			// write object to file
+			FileOutputStream fos = new FileOutputStream("Objectsavefile.ser");
+			ObjectOutputStream oos = new ObjectOutputStream(fos);
+			// TODO: figure this out... It won't work because the timeblocks
+			// have observable lists which don't work with serialization of
+			// object
+			oos.writeObject(new ArrayList<TimeBlock>(timeList));
 			oos.close();
+
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -282,8 +295,8 @@ public class TimeModifyController {
 		if (nextMinute == 30) { // handles 30 minute
 			nextHour++;
 			nextMinute -= 30;
-		}else{ // handles 0 minute
-			nextMinute+=30;
+		} else { // handles 0 minute
+			nextMinute += 30;
 		}
 		String timeInString = nextHour + ":" + nextMinute;
 		// currentPlayingTimeblock ;= timeBlockMap.get(nextDay.toString() + " |
@@ -300,6 +313,7 @@ public class TimeModifyController {
 		FileTable.setItems(fileList);
 		FileTable.setEditable(true);
 
+		// on drag
 		FileTable.setRowFactory(tv -> {
 			TableRow<FileBlock> row = new TableRow<>();
 			row.setOnDragDetected(event -> {
@@ -314,6 +328,7 @@ public class TimeModifyController {
 				}
 			});
 
+			// dragging
 			row.setOnDragOver(event -> {
 				Dragboard db = event.getDragboard();
 				if (db.hasContent(SERIALIZED_MIME_TYPE)) {
@@ -324,6 +339,7 @@ public class TimeModifyController {
 				}
 			});
 
+			// droped
 			row.setOnDragDropped(event -> {
 				Dragboard db = event.getDragboard();
 				if (db.hasContent(SERIALIZED_MIME_TYPE)) {
@@ -341,7 +357,9 @@ public class TimeModifyController {
 					FileTable.getItems().add(dropIndex, draggedPerson);
 					event.setDropCompleted(true);
 					FileTable.getSelectionModel().select(dropIndex);
-					System.out.println(fileList.get(0).getFileName());
+
+					updateTimeBlockView();
+
 					event.consume();
 
 				}
@@ -395,7 +413,7 @@ public class TimeModifyController {
 					FileTable.getItems().add(dropIndex, draggedPerson);
 					event.setDropCompleted(true);
 					FileTable.getSelectionModel().select(dropIndex);
-					System.out.println(fileList.get(0).getFileName());
+					updateTimeBlockView();
 					event.consume();
 
 				}
@@ -408,34 +426,29 @@ public class TimeModifyController {
 	// Horrible name, handle browse button
 	@FXML
 	private void handleButtonAction(ActionEvent event) {
+
 		DirectoryChooser chooser = new DirectoryChooser();
 		File defaultDirectory = new File("c:/");
 		chooser.setInitialDirectory(defaultDirectory);
 		File selectedDirectory = chooser.showDialog(stage);
 		FolderPath.setText(selectedDirectory.getAbsolutePath());
 		FileTable.getItems().clear();
+		this.currentTimeBlockView.setFilePath(selectedDirectory.getAbsolutePath());
 		for (final File fileEntry : selectedDirectory.listFiles()) {
 			FileBlock block = new FileBlock(fileEntry.getName(), fileEntry.toURI().toString());
 			System.out.println(block.getFileName());
 			fileList.add(block);
-			this.currentTimeBlockView.setFilePath(fileEntry.getAbsolutePath());
 		}
-
-		this.currentTimeBlockView.setFileList(FXCollections.observableArrayList(fileList));
-		// this.updateTimeBlockHashmap();
-		for (int i = 0; i < timeList.size(); ++i) {
-			if (timeList.get(i).getHour() == currentTimeBlockView.getHour()
-					&& timeList.get(i).getMinute() == currentTimeBlockView.getMinute()
-					&& timeList.get(i).getDay() == currentTimeBlockView.getDay()) {
-				timeList.set(i, currentTimeBlockView);
-			}
-		}
+		updateTimeBlockView();
 
 	}
 
 	@FXML
 	private void randomizeList() {
 		// TODO: just randomize list, ez
+		long seed = System.nanoTime();
+		Collections.shuffle(fileList, new Random(seed));
+		updateTimeBlockView();
 	}
 
 	public void initMediaPlayer() {

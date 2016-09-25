@@ -1,18 +1,20 @@
 package DataStructures;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
+import java.io.Serializable;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.scene.input.ScrollEvent.HorizontalTextScrollUnits;
 
-import java.time.*;
+public class TimeBlock implements Serializable{
 
-public class TimeBlock {
-
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 372221617279470664L;
 	private SimpleStringProperty timeBlockName = new SimpleStringProperty();
 	private LocalDate currentDate;
 	private DayOfWeek day;
