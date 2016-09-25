@@ -166,7 +166,7 @@ public class TimeModifyController {
 		this.fileList.addAll(this.currentTimeBlockView.getFileList());
 	}
 
-	private void initTimer() {
+	private void initTimer() throws Exception{
 		// find
 		LocalTime now = LocalTime.now();
 		int theMinute = now.getMinute();
@@ -201,6 +201,9 @@ public class TimeModifyController {
 
 		// above code should be done in setcurrentplaytime
 		setCurrentPlayTime(now.getHour(), minuteRoundedDown, day);
+		if(currentPlayingTimeblock.getFileList().get(trackNum).getFilePath() == ""){
+			throw new Exception("No current playlist");
+		}
 		updateMediaPlayer();
 
 		timer.schedule(new TimerTask() {
@@ -474,12 +477,9 @@ public class TimeModifyController {
 	@FXML
 	private void start() {
 		try{
-			if(currentPlayingTimeblock.getFileList().get(trackNum++).getFilePath() != ""){
-				initTimer();
-			}else{
-			}
+			initTimer();
 		}catch(Exception e){
-
+			System.out.println(e);
 			Alert alert = new Alert(AlertType.WARNING);
 			alert.setTitle("Empty Playlist for Current Time");
 			alert.setHeaderText("Empty Playlist");
