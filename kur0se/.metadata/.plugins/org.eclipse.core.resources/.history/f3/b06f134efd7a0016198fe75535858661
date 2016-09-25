@@ -1,8 +1,0 @@
-package DataStructures;
-
-public class FileBlock {
-
-	private String fileName;
-	private String filePath;
-	
-}
