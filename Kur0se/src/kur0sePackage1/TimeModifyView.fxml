@@ -50,6 +50,7 @@
                                                       <Label layoutX="172.0" layoutY="14.0" text="Time Block View " />
                                                       <Button fx:id="saveTimeBlocks" disable="true" layoutX="228.0" layoutY="64.0" mnemonicParsing="false" onAction="#saveTimeBlocks" text="Save TimeBlocks" />
                                                       <Button fx:id="RandomBox" layoutX="134.0" layoutY="157.0" mnemonicParsing="false" onAction="#randomizeList" text="Randomize" />
+                                                      <Button fx:id="fullscreenButton" layoutX="120.0" layoutY="64.0" mnemonicParsing="false" onAction="#fullscreenClick" text="Fullscreen" />
                   											</children>
                   										</AnchorPane>
                   									</content>

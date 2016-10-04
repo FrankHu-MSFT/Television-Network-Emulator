@@ -80,6 +80,8 @@ public class TimeModifyController {
 	private BorderPane videoPane;
 	@FXML
 	private Button saveTimeBlocks;
+	@FXML
+	private Button fullScreenButton;
 
 	private DirectMediaPlayerComponent mp;
 	private int trackNum = 0;
@@ -166,7 +168,7 @@ public class TimeModifyController {
 		this.fileList.addAll(this.currentTimeBlockView.getFileList());
 	}
 
-	private void initTimer() throws Exception{
+	private void initTimer() throws Exception {
 		// find
 		LocalTime now = LocalTime.now();
 		int theMinute = now.getMinute();
@@ -201,7 +203,7 @@ public class TimeModifyController {
 
 		// above code should be done in setcurrentplaytime
 		setCurrentPlayTime(now.getHour(), minuteRoundedDown, day);
-		if(currentPlayingTimeblock.getFileList().get(trackNum).getFilePath() == ""){
+		if (currentPlayingTimeblock.getFileList().get(trackNum).getFilePath() == "") {
 			throw new Exception("No current playlist");
 		}
 		updateMediaPlayer();
@@ -215,7 +217,7 @@ public class TimeModifyController {
 						// TODO: every thirty minutes
 						nextTimeBlock();
 						System.out.println(currentPlayingTimeblock.getTimeBlockName());
-						updateMediaPlayer();
+						// updateMediaPlayer();
 						System.out.println(currentPlayingTimeblock.getFilePath());
 					}
 				});
@@ -268,6 +270,11 @@ public class TimeModifyController {
 
 			}
 		});
+	}
+
+	@FXML
+	private void fullscreenClick(ActionEvent event) throws IOException {
+		this.stage.setFullScreen(!this.stage.isFullScreen());
 	}
 
 	@FXML
@@ -476,17 +483,18 @@ public class TimeModifyController {
 
 	@FXML
 	private void start() {
-		try{
+		try {
 			initTimer();
-		}catch(Exception e){
+		} catch (Exception e) {
 			System.out.println(e);
 			Alert alert = new Alert(AlertType.WARNING);
 			alert.setTitle("Empty Playlist for Current Time");
 			alert.setHeaderText("Empty Playlist");
-			alert.setContentText("Please update the current time with a playlist, otherwise this application will not work correctly.");
+			alert.setContentText(
+					"Please update the current time with a playlist, otherwise this application will not work correctly.");
 			alert.showAndWait();
 		}
-		
+
 	}
 
 	private HBox addToolBar() {
