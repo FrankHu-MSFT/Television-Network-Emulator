@@ -1,2 +1,0 @@
-commit_dialog_history_messages=<?xml version\="1.0" encoding\="UTF-8"?>\r\n<messages>\r\n<message>Updated seekbar... Also changed logic to make mediaplayer reinitialize&\#x0A;and then on end have it restart the next playlist.</message>\r\n<message>Large update added timebar, seek doesn&apos;t work on second video.. tested,&\#x0A;should work correctly now.</message>\r\n<message>Uploaded Jar</message>\r\n<message>Uploaded TVEmulator.jar</message>\r\n<message>Updated Controller and View</message>\r\n</messages>
-eclipse.preferences.version=1

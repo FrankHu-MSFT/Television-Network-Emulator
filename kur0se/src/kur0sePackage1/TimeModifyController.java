@@ -18,11 +18,14 @@ import java.util.TimerTask;
 import DataStructures.FileBlock;
 import DataStructures.TimeBlock;
 import javafx.application.Platform;
+import javafx.beans.InvalidationListener;
+import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.DoubleProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -30,7 +33,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.MenuItem;
+import javafx.scene.control.Slider;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
@@ -40,19 +43,20 @@ import javafx.scene.effect.DropShadow;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.DataFormat;
 import javafx.scene.input.Dragboard;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCodeCombination;
-import javafx.scene.input.KeyCombination;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import javafx.scene.media.MediaPlayer.Status;
 import javafx.scene.media.MediaView;
 import javafx.scene.paint.Color;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import javafx.util.Callback;
+import javafx.util.Duration;
 import uk.co.caprica.vlcj.component.DirectMediaPlayerComponent;
 
 public class TimeModifyController {
@@ -85,8 +89,22 @@ public class TimeModifyController {
 	@FXML
 	private Button saveTimeBlocks;
 	@FXML
-	private MenuItem fullscreenMenuItem;
-	private DirectMediaPlayerComponent mp;
+	private Button fullScreenButton;
+	// Slider for Mediaplayer
+	private Slider timeSlider;
+	private Slider volumeSlider;
+	// Mediaplayer box
+	private HBox mediaBar;
+
+	final Button playButton = new Button(">");
+
+	private final boolean repeat = false;
+	private boolean stopRequested = false;
+	private boolean atEndOfMedia = false;
+	private Duration duration;
+
+	private Label playTime;
+
 	private int trackNum = 0;
 	private MediaView mediaView;
 	private MediaPlayer mediaPlayer;
@@ -102,25 +120,12 @@ public class TimeModifyController {
 	public void initialize() {
 		// TimeTable init
 		initializeTimeList();
-		initMediaPlayer();
+		initMediaView();
 		initFileTable();
 		initFileList();
 		initTimeBlocks();
 		initCurrentPlayingTimeBlock();
-		initHotKeys();
 
-	}
-
-	private void initHotKeys() {
-		fullscreenMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.F, KeyCombination.ALT_DOWN));
-	}
-
-	@FXML
-	private void fullscreenMenuItemClick(ActionEvent event) {
-		if (this.stage.isFullScreen()) {
-			this.stage.setFullScreen(false);
-		} else
-			this.stage.setFullScreen(true);
 	}
 
 	private void initCurrentPlayingTimeBlock() {
@@ -184,7 +189,7 @@ public class TimeModifyController {
 		this.fileList.addAll(this.currentTimeBlockView.getFileList());
 	}
 
-	private void initTimer() throws Exception {
+	private void initTimerAndMediaBar() throws Exception {
 		// find
 		LocalTime now = LocalTime.now();
 		int theMinute = now.getMinute();
@@ -222,31 +227,36 @@ public class TimeModifyController {
 		if (currentPlayingTimeblock.getFileList().get(trackNum).getFilePath() == "") {
 			throw new Exception("No current playlist");
 		}
-		updateMediaPlayer();
+		initMediaPlayer();
 
 		timer.schedule(new TimerTask() {
 			@Override
 			public void run() {
 				Platform.runLater(new Runnable() {
+
 					public void run() {
 						trackNum = 0;
 						// TODO: every thirty minutes
 						nextTimeBlock();
 						System.out.println(currentPlayingTimeblock.getTimeBlockName());
+						// updateMediaPlayer();
 						System.out.println(currentPlayingTimeblock.getFilePath());
+
 					}
 				});
 			}
-		}, timePassed, 1800000); // theminute
-									// -minuteRoundedDown
-									// =
-									// difference
-									// between
-									// rounding
-									// down
-									// halfway.
+		}, timePassed, 1800000);// theminute
+		videoPane.setBottom(addToolBar());
+		// -minuteRoundedDown
+		// =
+		// difference
+		// between
+		// rounding
+		// down
+		// halfway.
 		// so 30 minutes - (difference between current and rounded down half
 		// hour) = amount to reach next half hour, therefore that is the delay
+
 	}
 
 	private void setCurrentPlayTime(int hour, int minute, DayOfWeek day) {
@@ -272,20 +282,27 @@ public class TimeModifyController {
 
 	// This doesn't actually update the current playing timeblock... bad design
 	// ik, fuck u
-	private void updateMediaPlayer() {
+	private void initMediaPlayer() {
 		Media media = new Media(currentPlayingTimeblock.getFileList().get(trackNum++).getFilePath());
 		mediaPlayer = new MediaPlayer(media);
 		mediaView.setMediaPlayer(mediaPlayer);
-		mediaPlayer.play();
-
+		mediaPlayer.setAutoPlay(true);	
+		videoPane.setBottom(addToolBar());
+		duration = mediaPlayer.getMedia().getDuration();
+		updateValues();
 		mediaPlayer.setOnEndOfMedia(new Runnable() {
 			@Override
 			public void run() {
-				Media media = new Media(currentPlayingTimeblock.getFileList().get(trackNum++).getFilePath());
-				mediaPlayer = new MediaPlayer(media);
-
+				initMediaPlayer();
+				System.out.println("end of media");
+			
 			}
 		});
+	}
+
+	@FXML
+	private void fullscreenClick(ActionEvent event) throws IOException {
+		this.stage.setFullScreen(!this.stage.isFullScreen());
 	}
 
 	@FXML
@@ -335,7 +352,7 @@ public class TimeModifyController {
 		FileTable.setItems(fileList);
 		FileTable.setEditable(true);
 
-		// on drag 
+		// on drag
 		FileTable.setRowFactory(tv -> {
 			TableRow<FileBlock> row = new TableRow<>();
 			row.setOnDragDetected(event -> {
@@ -473,11 +490,10 @@ public class TimeModifyController {
 		updateTimeBlockView();
 	}
 
-	public void initMediaPlayer() {
+	public void initMediaView() {
 		mediaView = new MediaView();
 		mediaView.setMediaPlayer(mediaPlayer);
 		videoPane.setCenter(mediaView);
-		videoPane.setBottom(addToolBar());
 		videoPane.setStyle("-fx-background-color: Black");
 		DropShadow dropshadow = new DropShadow();
 		dropshadow.setOffsetY(5.0);
@@ -495,7 +511,7 @@ public class TimeModifyController {
 	@FXML
 	private void start() {
 		try {
-			initTimer();
+			initTimerAndMediaBar();
 		} catch (Exception e) {
 			System.out.println(e);
 			Alert alert = new Alert(AlertType.WARNING);
@@ -508,15 +524,162 @@ public class TimeModifyController {
 
 	}
 
-	private HBox addToolBar() {
-		HBox toolBar = new HBox();
-		toolBar.setPadding(new Insets(20));
-		toolBar.setAlignment(Pos.CENTER);
-		toolBar.alignmentProperty().isBound();
-		toolBar.setSpacing(5);
-		toolBar.setStyle("-fx-background-color: Black");
+	protected void updateValues() {
+		if (playTime != null && timeSlider != null && volumeSlider != null && duration != null) {
+			Platform.runLater(new Runnable() {
+				public void run() {
+					Duration currentTime = mediaView.getMediaPlayer().getCurrentTime();
+					playTime.setText(formatTime(currentTime, duration));
+					timeSlider.setDisable(duration.isUnknown());
+					if (!timeSlider.isDisabled() && duration.greaterThan(Duration.ZERO)
+							&& !timeSlider.isValueChanging()) {
+						timeSlider.setValue(currentTime.divide(duration).toMillis() * 100.0);
+					}
+					if (!volumeSlider.isValueChanging()) {
+						volumeSlider.setValue((int) Math.round(mediaView.getMediaPlayer().getVolume() * 100));
+					}
+				}
+			});
+		}
+	}
 
-		return toolBar;
+	private HBox addToolBar() {
+
+		mediaBar = new HBox();
+		mediaBar.setAlignment(Pos.CENTER);
+		mediaBar.setPadding(new Insets(5, 10, 5, 10));
+		BorderPane.setAlignment(mediaBar, Pos.CENTER);
+		mediaBar.getChildren().add(playButton);
+		timeSlider = new Slider();
+		HBox.setHgrow(timeSlider, Priority.ALWAYS);
+		timeSlider.setMinWidth(50);
+		timeSlider.setMaxWidth(Double.MAX_VALUE / 2);
+		mediaBar.getChildren().add(timeSlider);
+		playTime = new Label();
+		playTime.setPrefWidth(130);
+		playTime.setMinWidth(50);
+		mediaBar.getChildren().add(playTime);
+		// Add the volume label
+		Label volumeLabel = new Label("Vol: ");
+		mediaBar.getChildren().add(volumeLabel);
+		// Add Volume slider
+		volumeSlider = new Slider();
+		volumeSlider.setPrefWidth(70);
+		volumeSlider.setMaxWidth(Region.USE_PREF_SIZE);
+		volumeSlider.setMinWidth(30);
+
+		mediaBar.getChildren().add(volumeSlider);
+
+		playButton.setOnAction(new EventHandler<ActionEvent>() {
+			public void handle(ActionEvent e) {
+				Status status = mediaView.getMediaPlayer().getStatus();
+
+				if (status == Status.UNKNOWN || status == Status.HALTED) {
+					// don't do anything in these states
+					return;
+				}
+
+				if (status == Status.PAUSED || status == Status.READY || status == Status.STOPPED) {
+					// rewind the movie if we're sitting at the end
+					if (atEndOfMedia) {
+						mediaView.getMediaPlayer().seek(mediaPlayer.getStartTime());
+						atEndOfMedia = false;
+					}
+
+					mediaView.getMediaPlayer().play();
+				} else {
+
+					mediaView.getMediaPlayer().pause();
+				}
+			}
+		});
+
+		mediaView.getMediaPlayer().currentTimeProperty().addListener(new InvalidationListener() {
+			public void invalidated(Observable ov) {
+				updateValues();
+			}
+		});
+
+		mediaView.getMediaPlayer().setOnPlaying(new Runnable() {
+			public void run() {
+				if (stopRequested) {
+					mediaView.getMediaPlayer().pause();
+					stopRequested = false;
+				} else {
+					playButton.setText("||");
+				}
+			}
+		});
+
+		mediaView.getMediaPlayer().setOnPaused(new Runnable() {
+			public void run() {
+				System.out.println("onPaused");
+				playButton.setText(">");
+			}
+		});
+
+		mediaView.getMediaPlayer().setOnReady(new Runnable() {
+			public void run() {
+				duration = mediaView.getMediaPlayer().getMedia().getDuration();
+				updateValues();
+			}
+		});
+
+		timeSlider.valueProperty().addListener(new InvalidationListener() {
+			public void invalidated(Observable ov) {
+				if (timeSlider.isValueChanging()) {
+					// multiply duration by percentage calculated by slider
+					// position
+					if (duration != null) {
+
+						mediaView.getMediaPlayer().seek(duration.multiply(timeSlider.getValue() / 100.0));
+					}
+					updateValues();
+				}
+			}
+		});
+		volumeSlider.valueProperty().addListener(new InvalidationListener() {
+			public void invalidated(Observable ov) {
+				if (volumeSlider.isValueChanging()) {
+
+					mediaView.getMediaPlayer().setVolume(volumeSlider.getValue() / 100.0);
+				}
+			}
+		});
+		return mediaBar;
+	}
+
+	private static String formatTime(Duration elapsed, Duration duration) {
+		int intElapsed = (int) Math.floor(elapsed.toSeconds());
+		int elapsedHours = intElapsed / (60 * 60);
+		if (elapsedHours > 0) {
+			intElapsed -= elapsedHours * 60 * 60;
+		}
+		int elapsedMinutes = intElapsed / 60;
+		int elapsedSeconds = intElapsed - elapsedHours * 60 * 60 - elapsedMinutes * 60;
+
+		if (duration.greaterThan(Duration.ZERO)) {
+			int intDuration = (int) Math.floor(duration.toSeconds());
+			int durationHours = intDuration / (60 * 60);
+			if (durationHours > 0) {
+				intDuration -= durationHours * 60 * 60;
+			}
+			int durationMinutes = intDuration / 60;
+			int durationSeconds = intDuration - durationHours * 60 * 60 - durationMinutes * 60;
+			if (durationHours > 0) {
+				return String.format("%d:%02d:%02d/%d:%02d:%02d", elapsedHours, elapsedMinutes, elapsedSeconds,
+						durationHours, durationMinutes, durationSeconds);
+			} else {
+				return String.format("%02d:%02d/%02d:%02d", elapsedMinutes, elapsedSeconds, durationMinutes,
+						durationSeconds);
+			}
+		} else {
+			if (elapsedHours > 0) {
+				return String.format("%d:%02d:%02d", elapsedHours, elapsedMinutes, elapsedSeconds);
+			} else {
+				return String.format("%02d:%02d", elapsedMinutes, elapsedSeconds);
+			}
+		}
 	}
 
 	public void setStageAndSetupListeners(Stage primaryStage) {
