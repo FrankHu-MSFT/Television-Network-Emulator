@@ -30,6 +30,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
@@ -39,6 +40,9 @@ import javafx.scene.effect.DropShadow;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.DataFormat;
 import javafx.scene.input.Dragboard;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
@@ -80,7 +84,8 @@ public class TimeModifyController {
 	private BorderPane videoPane;
 	@FXML
 	private Button saveTimeBlocks;
-
+	@FXML
+	private MenuItem fullscreenMenuItem;
 	private DirectMediaPlayerComponent mp;
 	private int trackNum = 0;
 	private MediaView mediaView;
@@ -102,7 +107,20 @@ public class TimeModifyController {
 		initFileList();
 		initTimeBlocks();
 		initCurrentPlayingTimeBlock();
+		initHotKeys();
 
+	}
+
+	private void initHotKeys() {
+		fullscreenMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.F, KeyCombination.ALT_DOWN));
+	}
+
+	@FXML
+	private void fullscreenMenuItemClick(ActionEvent event) {
+		if (this.stage.isFullScreen()) {
+			this.stage.setFullScreen(false);
+		} else
+			this.stage.setFullScreen(true);
 	}
 
 	private void initCurrentPlayingTimeBlock() {
@@ -166,7 +184,7 @@ public class TimeModifyController {
 		this.fileList.addAll(this.currentTimeBlockView.getFileList());
 	}
 
-	private void initTimer() throws Exception{
+	private void initTimer() throws Exception {
 		// find
 		LocalTime now = LocalTime.now();
 		int theMinute = now.getMinute();
@@ -201,7 +219,7 @@ public class TimeModifyController {
 
 		// above code should be done in setcurrentplaytime
 		setCurrentPlayTime(now.getHour(), minuteRoundedDown, day);
-		if(currentPlayingTimeblock.getFileList().get(trackNum).getFilePath() == ""){
+		if (currentPlayingTimeblock.getFileList().get(trackNum).getFilePath() == "") {
 			throw new Exception("No current playlist");
 		}
 		updateMediaPlayer();
@@ -215,7 +233,6 @@ public class TimeModifyController {
 						// TODO: every thirty minutes
 						nextTimeBlock();
 						System.out.println(currentPlayingTimeblock.getTimeBlockName());
-						updateMediaPlayer();
 						System.out.println(currentPlayingTimeblock.getFilePath());
 					}
 				});
@@ -259,7 +276,8 @@ public class TimeModifyController {
 		Media media = new Media(currentPlayingTimeblock.getFileList().get(trackNum++).getFilePath());
 		mediaPlayer = new MediaPlayer(media);
 		mediaView.setMediaPlayer(mediaPlayer);
-		mediaPlayer.setAutoPlay(true);
+		mediaPlayer.play();
+
 		mediaPlayer.setOnEndOfMedia(new Runnable() {
 			@Override
 			public void run() {
@@ -317,7 +335,7 @@ public class TimeModifyController {
 		FileTable.setItems(fileList);
 		FileTable.setEditable(true);
 
-		// on drag
+		// on drag 
 		FileTable.setRowFactory(tv -> {
 			TableRow<FileBlock> row = new TableRow<>();
 			row.setOnDragDetected(event -> {
@@ -476,17 +494,18 @@ public class TimeModifyController {
 
 	@FXML
 	private void start() {
-		try{
+		try {
 			initTimer();
-		}catch(Exception e){
+		} catch (Exception e) {
 			System.out.println(e);
 			Alert alert = new Alert(AlertType.WARNING);
 			alert.setTitle("Empty Playlist for Current Time");
 			alert.setHeaderText("Empty Playlist");
-			alert.setContentText("Please update the current time with a playlist, otherwise this application will not work correctly.");
+			alert.setContentText(
+					"Please update the current time with a playlist, otherwise this application will not work correctly.");
 			alert.showAndWait();
 		}
-		
+
 	}
 
 	private HBox addToolBar() {
