@@ -361,14 +361,19 @@ public class TimeModifyController {
 		int nextHour = currentPlayingTimeblock.getHour();
 		int nextMinute = currentPlayingTimeblock.getMinute();
 		DayOfWeek nextDay = currentPlayingTimeblock.getDay();
-		if (nextHour == 23 && nextMinute == 30) { // handles day
+		if (nextHour == 23 && nextMinute == 30) { 
+			// handles next day
 			nextDay = currentPlayingTimeblock.getDay().plus(1);
-		}
-		if (nextMinute == 30) { // handles 30 minute
-			nextHour++;
-			nextMinute -= 30;
-		} else { // handles 0 minute
-			nextMinute += 30;
+			nextHour = 0;
+			nextMinute = 0;
+		} else{
+			// handles 30 minute to next hour, and handles o clock + 30 minutes
+			if (nextMinute == 30) { // handles 30 minute
+				nextHour++;
+				nextMinute -= 30;
+			} else { // handles 0 minute
+				nextMinute += 30;
+			}
 		}
 		String timeInString = nextHour + ":" + nextMinute;
 		// currentPlayingTimeblock ;= timeBlockMap.get(nextDay.toString() + " |
