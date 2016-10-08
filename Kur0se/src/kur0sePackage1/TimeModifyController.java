@@ -63,7 +63,6 @@ public class TimeModifyController {
 
 	@FXML
 	private Button BrowseButton;
-
 	@FXML
 	private TableView<TimeBlock> TimeBlocks;
 	@FXML
@@ -90,6 +89,8 @@ public class TimeModifyController {
 	private Button saveTimeBlocks;
 	@FXML
 	private Button fullScreenButton;
+	@FXML
+	private Button startButton;
 	// Slider for Mediaplayer
 	private Slider timeSlider;
 	private Slider volumeSlider;
@@ -102,6 +103,8 @@ public class TimeModifyController {
 	private boolean stopRequested = false;
 	private boolean atEndOfMedia = false;
 	private Duration duration;
+
+	private Timer timer;
 
 	private Label playTime;
 
@@ -194,7 +197,7 @@ public class TimeModifyController {
 		LocalTime now = LocalTime.now();
 		int theMinute = now.getMinute();
 		int minuteRoundedDown = (theMinute / 30 == 0 ? 0 : 30);
-		Timer timer = new Timer();
+		timer = new Timer();
 		LocalDate date = LocalDate.now();
 		DayOfWeek day = date.getDayOfWeek();
 		long timePassed = (30 * 60 * 1000) - ((theMinute * 60 * 1000) - (minuteRoundedDown * 60 * 1000));
@@ -283,21 +286,51 @@ public class TimeModifyController {
 	// This doesn't actually update the current playing timeblock... bad design
 	// ik, fuck u
 	private void initMediaPlayer() {
-		Media media = new Media(currentPlayingTimeblock.getFileList().get(trackNum++).getFilePath());
-		mediaPlayer = new MediaPlayer(media);
-		mediaView.setMediaPlayer(mediaPlayer);
-		mediaPlayer.setAutoPlay(true);	
-		videoPane.setBottom(addToolBar());
-		duration = mediaPlayer.getMedia().getDuration();
-		updateValues();
-		mediaPlayer.setOnEndOfMedia(new Runnable() {
-			@Override
-			public void run() {
-				initMediaPlayer();
-				System.out.println("end of media");
-			
-			}
-		});
+		// Makes it loop around
+		if (currentPlayingTimeblock.getFileList().size() < trackNum + 1) {
+			trackNum = 0;
+			System.out.println("ran in looper");
+		}
+		if (currentPlayingTimeblock.getFileList().size() == 0) {
+			System.out.println("Empty");
+			timer.cancel();
+			trackNum = 0;
+			startButton.setDisable(false);
+			Alert alert = new Alert(AlertType.WARNING);
+			alert.setTitle("Empty Playlist for Current Time Block");
+			alert.setHeaderText("Empty Playlist");
+			alert.setContentText(
+					"Please update the current time with a playlist, otherwise this application will not work correctly. The timer has been stopped, please press start to restart the timer");
+			alert.showAndWait();
+		}
+		try {
+			System.out.println("Ran in here?");
+			Media media = new Media(currentPlayingTimeblock.getFileList().get(trackNum++).getFilePath());
+			mediaPlayer = new MediaPlayer(media);
+			mediaView.setMediaPlayer(mediaPlayer);
+			mediaPlayer.setAutoPlay(true);
+			videoPane.setBottom(addToolBar());
+			duration = mediaPlayer.getMedia().getDuration();
+			updateValues();
+			mediaPlayer.setOnEndOfMedia(new Runnable() {
+				@Override
+				public void run() {
+					initMediaPlayer();
+					System.out.println("end of media");
+
+				}
+			});
+		} catch (Exception e) {
+			timer.cancel();
+			trackNum = 0;
+			startButton.setDisable(false);
+			Alert alert = new Alert(AlertType.WARNING);
+			alert.setTitle("Next video in playlist is in unplayable format");
+			alert.setHeaderText("Please modify playlist and make next item playable");
+			alert.setContentText(
+					"Please update the current time with a playable playlist, otherwise this application will not work correctly. The timer has been stopped, please press start to restart the timer");
+			alert.showAndWait();
+		}
 	}
 
 	@FXML
@@ -494,6 +527,8 @@ public class TimeModifyController {
 		mediaView = new MediaView();
 		mediaView.setMediaPlayer(mediaPlayer);
 		videoPane.setCenter(mediaView);
+		videoPane.setMinHeight(200);
+		videoPane.setMinWidth(500);
 		videoPane.setStyle("-fx-background-color: Black");
 		DropShadow dropshadow = new DropShadow();
 		dropshadow.setOffsetY(5.0);
@@ -510,8 +545,10 @@ public class TimeModifyController {
 
 	@FXML
 	private void start() {
+
 		try {
 			initTimerAndMediaBar();
+			startButton.setDisable(true);
 		} catch (Exception e) {
 			System.out.println(e);
 			Alert alert = new Alert(AlertType.WARNING);
@@ -646,6 +683,7 @@ public class TimeModifyController {
 				}
 			}
 		});
+		
 		return mediaBar;
 	}
 

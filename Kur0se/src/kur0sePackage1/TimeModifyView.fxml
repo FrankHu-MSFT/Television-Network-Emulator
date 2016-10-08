@@ -44,7 +44,7 @@
                   												<TextField fx:id="FolderPath" layoutX="104.0" layoutY="111.0" />
                   												<Button fx:id="BrowseButton" layoutX="253.0" layoutY="111.0" mnemonicParsing="false" onAction="#handleButtonAction" text="Browse" />
                   												<Label layoutX="148.0" layoutY="94.0" text="Folder Path" />
-                                                      <Button fx:id="start" layoutX="255.0" layoutY="157.0" mnemonicParsing="false" onAction="#start" text="Start" />
+                                                      <Button fx:id="startButton" layoutX="255.0" layoutY="157.0" mnemonicParsing="false" onAction="#start" text="Start" />
                                                       <Label fx:id="day" layoutX="134.0" layoutY="38.0" text="Day" />
                                                       <Label fx:id="time" layoutX="267.0" layoutY="38.0" text="Time" />
                                                       <Label layoutX="172.0" layoutY="14.0" text="Time Block View " />
