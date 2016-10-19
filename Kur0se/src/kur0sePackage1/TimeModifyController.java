@@ -57,7 +57,7 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import javafx.util.Duration;
-import uk.co.caprica.vlcj.component.DirectMediaPlayerComponent;
+
 
 public class TimeModifyController {
 
@@ -302,35 +302,37 @@ public class TimeModifyController {
 			alert.setContentText(
 					"Please update the current time with a playlist, otherwise this application will not work correctly. The timer has been stopped, please press start to restart the timer");
 			alert.showAndWait();
-		}
-		try {
-			System.out.println("Ran in here?");
-			Media media = new Media(currentPlayingTimeblock.getFileList().get(trackNum++).getFilePath());
-			mediaPlayer = new MediaPlayer(media);
-			mediaView.setMediaPlayer(mediaPlayer);
-			mediaPlayer.setAutoPlay(true);
-			videoPane.setBottom(addToolBar());
-			duration = mediaPlayer.getMedia().getDuration();
-			updateValues();
-			mediaPlayer.setOnEndOfMedia(new Runnable() {
-				@Override
-				public void run() {
-					initMediaPlayer();
-					System.out.println("end of media");
+		}else{
+			try {
+				System.out.println("Ran in here?");
+				Media media = new Media(currentPlayingTimeblock.getFileList().get(trackNum++).getFilePath());
+				mediaPlayer = new MediaPlayer(media);
+				mediaView.setMediaPlayer(mediaPlayer);
+				mediaPlayer.setAutoPlay(true);
+				videoPane.setBottom(addToolBar());
+				duration = mediaPlayer.getMedia().getDuration();
+				updateValues();
+				mediaPlayer.setOnEndOfMedia(new Runnable() {
+					@Override
+					public void run() {
+						initMediaPlayer();
+						System.out.println("end of media");
 
-				}
-			});
-		} catch (Exception e) {
-			timer.cancel();
-			trackNum = 0;
-			startButton.setDisable(false);
-			Alert alert = new Alert(AlertType.WARNING);
-			alert.setTitle("Next video in playlist is in unplayable format");
-			alert.setHeaderText("Please modify playlist and make next item playable");
-			alert.setContentText(
-					"Please update the current time with a playable playlist, otherwise this application will not work correctly. The timer has been stopped, please press start to restart the timer");
-			alert.showAndWait();
+					}
+				});
+			} catch (Exception e) {
+				timer.cancel();
+				trackNum = 0;
+				startButton.setDisable(false);
+				Alert alert = new Alert(AlertType.WARNING);
+				alert.setTitle("Next video in playlist is in unplayable format");
+				alert.setHeaderText("Please modify playlist and make next item playable");
+				alert.setContentText(
+						"Please update the current time with a playable playlist, otherwise this application will not work correctly. The timer has been stopped, please press start to restart the timer");
+				alert.showAndWait();
+			}
 		}
+	
 	}
 
 	@FXML
@@ -922,54 +924,6 @@ public class TimeModifyController {
 		timeList.add(new TimeBlock(DayOfWeek.THURSDAY, 22, 30));
 		timeList.add(new TimeBlock(DayOfWeek.THURSDAY, 23, 0));
 		timeList.add(new TimeBlock(DayOfWeek.THURSDAY, 23, 30));
-		timeList.add(new TimeBlock(DayOfWeek.FRIDAY, 0, 0));
-		timeList.add(new TimeBlock(DayOfWeek.FRIDAY, 0, 30));
-		timeList.add(new TimeBlock(DayOfWeek.FRIDAY, 1, 0));
-		timeList.add(new TimeBlock(DayOfWeek.FRIDAY, 1, 30));
-		timeList.add(new TimeBlock(DayOfWeek.FRIDAY, 2, 0));
-		timeList.add(new TimeBlock(DayOfWeek.FRIDAY, 2, 30));
-		timeList.add(new TimeBlock(DayOfWeek.FRIDAY, 3, 0));
-		timeList.add(new TimeBlock(DayOfWeek.FRIDAY, 3, 30));
-		timeList.add(new TimeBlock(DayOfWeek.FRIDAY, 4, 0));
-		timeList.add(new TimeBlock(DayOfWeek.FRIDAY, 4, 30));
-		timeList.add(new TimeBlock(DayOfWeek.FRIDAY, 5, 0));
-		timeList.add(new TimeBlock(DayOfWeek.FRIDAY, 5, 30));
-		timeList.add(new TimeBlock(DayOfWeek.FRIDAY, 6, 0));
-		timeList.add(new TimeBlock(DayOfWeek.FRIDAY, 6, 30));
-		timeList.add(new TimeBlock(DayOfWeek.FRIDAY, 7, 0));
-		timeList.add(new TimeBlock(DayOfWeek.FRIDAY, 7, 30));
-		timeList.add(new TimeBlock(DayOfWeek.FRIDAY, 8, 0));
-		timeList.add(new TimeBlock(DayOfWeek.FRIDAY, 8, 30));
-		timeList.add(new TimeBlock(DayOfWeek.FRIDAY, 9, 0));
-		timeList.add(new TimeBlock(DayOfWeek.FRIDAY, 9, 30));
-		timeList.add(new TimeBlock(DayOfWeek.FRIDAY, 10, 0));
-		timeList.add(new TimeBlock(DayOfWeek.FRIDAY, 10, 30));
-		timeList.add(new TimeBlock(DayOfWeek.FRIDAY, 11, 0));
-		timeList.add(new TimeBlock(DayOfWeek.FRIDAY, 11, 30));
-		timeList.add(new TimeBlock(DayOfWeek.FRIDAY, 12, 0));
-		timeList.add(new TimeBlock(DayOfWeek.FRIDAY, 12, 30));
-		timeList.add(new TimeBlock(DayOfWeek.FRIDAY, 13, 0));
-		timeList.add(new TimeBlock(DayOfWeek.FRIDAY, 13, 30));
-		timeList.add(new TimeBlock(DayOfWeek.FRIDAY, 14, 0));
-		timeList.add(new TimeBlock(DayOfWeek.FRIDAY, 14, 30));
-		timeList.add(new TimeBlock(DayOfWeek.FRIDAY, 15, 0));
-		timeList.add(new TimeBlock(DayOfWeek.FRIDAY, 15, 30));
-		timeList.add(new TimeBlock(DayOfWeek.FRIDAY, 16, 0));
-		timeList.add(new TimeBlock(DayOfWeek.FRIDAY, 16, 30));
-		timeList.add(new TimeBlock(DayOfWeek.FRIDAY, 17, 0));
-		timeList.add(new TimeBlock(DayOfWeek.FRIDAY, 17, 30));
-		timeList.add(new TimeBlock(DayOfWeek.FRIDAY, 18, 0));
-		timeList.add(new TimeBlock(DayOfWeek.FRIDAY, 18, 30));
-		timeList.add(new TimeBlock(DayOfWeek.FRIDAY, 19, 0));
-		timeList.add(new TimeBlock(DayOfWeek.FRIDAY, 19, 30));
-		timeList.add(new TimeBlock(DayOfWeek.FRIDAY, 20, 0));
-		timeList.add(new TimeBlock(DayOfWeek.FRIDAY, 20, 30));
-		timeList.add(new TimeBlock(DayOfWeek.FRIDAY, 21, 0));
-		timeList.add(new TimeBlock(DayOfWeek.FRIDAY, 21, 30));
-		timeList.add(new TimeBlock(DayOfWeek.FRIDAY, 22, 0));
-		timeList.add(new TimeBlock(DayOfWeek.FRIDAY, 22, 30));
-		timeList.add(new TimeBlock(DayOfWeek.FRIDAY, 23, 0));
-		timeList.add(new TimeBlock(DayOfWeek.FRIDAY, 23, 30));
 		timeList.add(new TimeBlock(DayOfWeek.FRIDAY, 0, 0));
 		timeList.add(new TimeBlock(DayOfWeek.FRIDAY, 0, 30));
 		timeList.add(new TimeBlock(DayOfWeek.FRIDAY, 1, 0));

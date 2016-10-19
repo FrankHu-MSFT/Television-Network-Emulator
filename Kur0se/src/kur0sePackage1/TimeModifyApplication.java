@@ -67,7 +67,8 @@ public class TimeModifyApplication extends Application {
 			
 			rootLayout = (AnchorPane) loader.load();
 
-			controller.initialize();
+			// So apparently it automaticall intiializes when the thing is created I guess. 
+			// controller.initialize();
 			// Show the scene containing the root layout.
 			Scene scene = new Scene(rootLayout);
 			primaryStage.setScene(scene);
