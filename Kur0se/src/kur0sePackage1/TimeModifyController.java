@@ -1040,6 +1040,7 @@ public class TimeModifyController {
 		timeList.add(new TimeBlock(DayOfWeek.SUNDAY, 8, 30));
 		timeList.add(new TimeBlock(DayOfWeek.SUNDAY, 9, 0));
 		timeList.add(new TimeBlock(DayOfWeek.SUNDAY, 9, 30));
+		timeList.add(new TimeBlock(DayOfWeek.SUNDAY, 10, 0));
 		timeList.add(new TimeBlock(DayOfWeek.SUNDAY, 10, 30));
 		timeList.add(new TimeBlock(DayOfWeek.SUNDAY, 11, 0));
 		timeList.add(new TimeBlock(DayOfWeek.SUNDAY, 11, 30));

@@ -34,7 +34,7 @@ public class TimeModifyApplication extends Application {
 	@Override
 	public void start(Stage primaryStage) {
 		this.primaryStage = primaryStage;
-		this.primaryStage.setTitle("Television Network Emualtor");
+		this.primaryStage.setTitle("Television Network Emulator");
 
 		initRootLayout();
 
@@ -71,8 +71,8 @@ public class TimeModifyApplication extends Application {
 			// controller.initialize();
 			// Show the scene containing the root layout.
 			Scene scene = new Scene(rootLayout);
-			primaryStage.setScene(scene);
 			primaryStage.show();
+			primaryStage.setScene(scene);
 			primaryStage.setOnCloseRequest(e -> System.exit(0));
 
 		} catch (IOException e) {
