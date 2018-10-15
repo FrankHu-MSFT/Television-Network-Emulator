@@ -1,6 +1,8 @@
 # Television-Network-Emulator
 
-#Branch 1.1 is an alpha bug fix to make all timeblocks track their video progerssion seperately. That way all timeblocks keep track of their own video being played in the list at the time. 
+#Alpha Fix Branch
+
+This branch is for an alpha bug fix to make all timeblocks track their video progerssion seperately. That way all timeblocks keep track of their own video being played in the list at the time. Still being tested
 
 Inspired by kur0san. Unfortunately the program absolutely less than stellar... In theory the timer should work correctly. however, still testing. Confident enough to release v1. 
 
