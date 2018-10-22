@@ -1,10 +1,7 @@
 # Television-Network-Emulator
+Inspired by kurosan. 
 
-#Alpha Fix Branch
-
-This branch is for an alpha bug fix to make all timeblocks track their video progerssion seperately. That way all timeblocks keep track of their own video being played in the list at the time. Still being tested
-
-Inspired by kur0san. Unfortunately the program absolutely less than stellar... In theory the timer should work correctly. however, still testing. Confident enough to release v1. 
+Confident enough to release v1. 
 
 This program essentially emulates a television network. It will play videos according to what the time is. i.e 1:30 will play the folder of videos that you designated at 1:30, and once it's 2:00 it will switch folders.
 
@@ -20,3 +17,8 @@ Utilizes a timer that runs every 30 minutes.
 
 Implementing different times is possible,
 easily through a timer that simply checks every 1 minute what time block it should be in. Could easily be implented with the nexttimeblock method. 
+
+
+Possible Ideas:
+Save Video Time in timeblock and video place, to play the video at time X:XX on video Y in timeblock Z. 
+That way it properly handles saving times for videos next week. 
