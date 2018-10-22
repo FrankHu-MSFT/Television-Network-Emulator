@@ -58,7 +58,6 @@ import javafx.stage.Stage;
 import javafx.util.Callback;
 import javafx.util.Duration;
 
-
 public class TimeModifyController {
 
 	@FXML
@@ -96,19 +95,13 @@ public class TimeModifyController {
 	private Slider volumeSlider;
 	// Mediaplayer box
 	private HBox mediaBar;
-
 	final Button playButton = new Button(">");
-
 	private final boolean repeat = false;
 	private boolean stopRequested = false;
 	private boolean atEndOfMedia = false;
 	private Duration duration;
-
 	private Timer timer;
-
 	private Label playTime;
-
-	private int trackNum = 0;
 	private MediaView mediaView;
 	private MediaPlayer mediaPlayer;
 	private TimeBlock currentTimeBlockView;
@@ -227,7 +220,7 @@ public class TimeModifyController {
 
 		// above code should be done in setcurrentplaytime
 		setCurrentPlayTime(now.getHour(), minuteRoundedDown, day);
-		if (currentPlayingTimeblock.getFileList().get(trackNum).getFilePath() == "") {
+		if (currentPlayingTimeblock.getFileList().get(currentPlayingTimeblock.getVideoPlace()).getFilePath() == "") {
 			throw new Exception("No current playlist");
 		}
 		initMediaPlayer();
@@ -238,7 +231,6 @@ public class TimeModifyController {
 				Platform.runLater(new Runnable() {
 
 					public void run() {
-						trackNum = 0;
 						// TODO: every thirty minutes
 						nextTimeBlock();
 						System.out.println(currentPlayingTimeblock.getTimeBlockName());
@@ -287,14 +279,12 @@ public class TimeModifyController {
 	// ik, fuck u
 	private void initMediaPlayer() {
 		// Makes it loop around
-		if (currentPlayingTimeblock.getFileList().size() < trackNum + 1) {
-			trackNum = 0;
+		if (currentPlayingTimeblock.getFileList().size() < currentPlayingTimeblock.getVideoPlace() + 1) {
 			System.out.println("ran in looper");
 		}
 		if (currentPlayingTimeblock.getFileList().size() == 0) {
 			System.out.println("Empty");
 			timer.cancel();
-			trackNum = 0;
 			startButton.setDisable(false);
 			Alert alert = new Alert(AlertType.WARNING);
 			alert.setTitle("Empty Playlist for Current Time Block");
@@ -302,10 +292,12 @@ public class TimeModifyController {
 			alert.setContentText(
 					"Please update the current time with a playlist, otherwise this application will not work correctly. The timer has been stopped, please press start to restart the timer");
 			alert.showAndWait();
-		}else{
+		} else {
 			try {
 				System.out.println("Ran in here?");
-				Media media = new Media(currentPlayingTimeblock.getFileList().get(trackNum++).getFilePath());
+				Media media = new Media(currentPlayingTimeblock.getFileList()
+						.get(currentPlayingTimeblock.getVideoPlace()).getFilePath());
+				currentPlayingTimeblock.setVideoPlace(currentPlayingTimeblock.getVideoPlace() + 1);
 				mediaPlayer = new MediaPlayer(media);
 				mediaView.setMediaPlayer(mediaPlayer);
 				mediaPlayer.setAutoPlay(true);
@@ -322,7 +314,6 @@ public class TimeModifyController {
 				});
 			} catch (Exception e) {
 				timer.cancel();
-				trackNum = 0;
 				startButton.setDisable(false);
 				Alert alert = new Alert(AlertType.WARNING);
 				alert.setTitle("Next video in playlist is in unplayable format");
@@ -332,7 +323,7 @@ public class TimeModifyController {
 				alert.showAndWait();
 			}
 		}
-	
+
 	}
 
 	@FXML
@@ -363,12 +354,12 @@ public class TimeModifyController {
 		int nextHour = currentPlayingTimeblock.getHour();
 		int nextMinute = currentPlayingTimeblock.getMinute();
 		DayOfWeek nextDay = currentPlayingTimeblock.getDay();
-		if (nextHour == 23 && nextMinute == 30) { 
+		if (nextHour == 23 && nextMinute == 30) {
 			// handles next day
 			nextDay = currentPlayingTimeblock.getDay().plus(1);
 			nextHour = 0;
 			nextMinute = 0;
-		} else{
+		} else {
 			// handles 30 minute to next hour, and handles o clock + 30 minutes
 			if (nextMinute == 30) { // handles 30 minute
 				nextHour++;
@@ -690,7 +681,7 @@ public class TimeModifyController {
 				}
 			}
 		});
-		
+
 		return mediaBar;
 	}
 

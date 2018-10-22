@@ -9,7 +9,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-public class TimeBlock implements Serializable{
+public class TimeBlock implements Serializable {
 
 	/**
 	 * 
@@ -22,6 +22,7 @@ public class TimeBlock implements Serializable{
 	private int minute;
 	private String timeInString;
 	private String filePath;
+	private int videoPlace = 0;
 
 	private ObservableList<FileBlock> fileList = FXCollections.observableArrayList();
 
@@ -55,7 +56,6 @@ public class TimeBlock implements Serializable{
 		timeBlockName.set(day.toString() + " | " + timeInString);
 		filePath = "";
 	}
-
 
 	public String getTimeBlockName() {
 		return timeBlockName.get();
@@ -111,6 +111,18 @@ public class TimeBlock implements Serializable{
 
 	public void setTimeInString(String timeInString) {
 		this.timeInString = timeInString;
+	}
+
+	public int getVideoPlace() {
+		return videoPlace;
+	}
+
+	public void setVideoPlace(int videoPlace) {
+		if (videoPlace >= this.fileList.size() || videoPlace < 0) {
+			this.videoPlace = 0;
+		} else {
+			this.videoPlace = videoPlace;
+		}
 	}
 
 }
