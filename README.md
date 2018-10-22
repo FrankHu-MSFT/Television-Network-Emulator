@@ -15,11 +15,18 @@ Utilizes a timer that runs every 30 minutes.
 
 
 
-Possible Ideas:
+<header>
+Ideas :
+============
+</header>
 Save Video Time in timeblock and video place, to play the video at time X:XX on video Y in timeblock Z. 
 That way it properly handles saving times for videos next week. 
 
 Implementing different times is possible, easily through a timer that simply checks every 1 minute what time block it should be in. Could easily be implented with the nexttimeblock method. 
 
+
+<header>
 Issues :
+============
+</header>
 Saving time blocks still not working, requires restructuring data structures, or creating a method chain that saves the respective file lists and a loading method that loads all variables, would need to save in a structured way... 
