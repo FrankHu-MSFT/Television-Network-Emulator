@@ -28,7 +28,7 @@ The timeblocks are broken up into different times per 24 hour format.
 
 I.e. Monday | 0:0 is the very beginning of the day at 12AM. 
 It will then continue accordingly, it will also play based on the timezone your computer is in. 
-**The title of the Java Application will actually show you the current timeblock. See picture below **
+**The title of the Java Application will actually show you the current timeblock. See picture below**
 https://i.imgur.com/7IpzCd5.png
 
 In order to start playing, you will need to load the current timeblock that you are in, i.e. if it's 7:30pm, you will need to have a properly loaded timeblock at 19:30 to play. 
