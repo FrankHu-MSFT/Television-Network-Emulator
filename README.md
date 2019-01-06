@@ -31,6 +31,8 @@ It will then continue accordingly, it will also play based on the timezone your 
 
 In order to start playing, you will need to load the current timeblock that you are in, i.e. if it's 7:30pm, you will need to have a properly loaded timeblock at 19:30 to play. 
 
+## Support
+
 If you have any issues with this, feel free to open up an issue against this github repo and I will respond back as soon as possible.
 
 
