@@ -38,7 +38,7 @@ In order to start playing, you will need to load the current timeblock that you 
 
 ## Support
 
-If you have any issues with this, feel free to open up an issue against this github repo and I will respond back as soon as possible.
+If there are any issues in regards to this sample, please file a GitHub issue. This sample is not supported by Azure Support or Microsoft nor is this plugin associated with Microsoft.
 
 
 ## Ideas 
