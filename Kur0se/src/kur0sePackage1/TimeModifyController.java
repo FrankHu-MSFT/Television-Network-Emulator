@@ -194,21 +194,11 @@ public class TimeModifyController {
 		LocalDate date = LocalDate.now();
 		DayOfWeek day = date.getDayOfWeek();
 		long timePassed = (30 * 60 * 1000) - ((theMinute * 60 * 1000) - (minuteRoundedDown * 60 * 1000));
-		// Calculates
-		// time
-		// passed
-		// from
-		// the
-		// floor
-		// of
-		// the
-		// half
-		// hour
+		// Calculates time passed from the floor of the half hour
 		// This is where we set the current playing time block
 		// currentPlayingTimeblock = timeBlockMap.get(day + " | " +
 		// now.getHour() + ":" + minuteRoundedDown);
-		// K so, I fucked up, I should have just used a fucking hashmap. RIP,
-		// whatever fuck it
+		// I should have just used a fucking hashmap. 
 
 		/*
 		 * for (int i = 0; i < timeList.size(); ++i) { if
