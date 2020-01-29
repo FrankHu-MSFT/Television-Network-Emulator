@@ -198,7 +198,6 @@ public class TimeModifyController {
 		// This is where we set the current playing time block
 		// currentPlayingTimeblock = timeBlockMap.get(day + " | " +
 		// now.getHour() + ":" + minuteRoundedDown);
-		// I should have just used a fucking hashmap. 
 
 		/*
 		 * for (int i = 0; i < timeList.size(); ++i) { if
@@ -266,7 +265,6 @@ public class TimeModifyController {
 	}
 
 	// This doesn't actually update the current playing timeblock... bad design
-	// ik, fuck u
 	private void initMediaPlayer() {
 		// Makes it loop around
 		if (currentPlayingTimeblock.getFileList().size() < currentPlayingTimeblock.getVideoPlace() + 1) {
